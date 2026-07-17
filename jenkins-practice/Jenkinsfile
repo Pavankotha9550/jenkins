@@ -18,6 +18,12 @@ pipeline {
     }
     // Build
     stages {
+         stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/Pavankotha9550/jenkins.git'
+            }
+        }
         stage('Build') {
             steps {
                 script{
