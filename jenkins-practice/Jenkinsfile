@@ -18,19 +18,19 @@ pipeline {
     }
     // Build
     stages {
-        stage('Checkout') {
+        /* stage('Checkout') {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/Pavankotha9550/jenkins.git'
             }
-        }
-        stage('grt-file') {
+        } */
+        /* stage('grt-file') {
             steps {
                 dir('jenkins-practice') {
                     sh 'ls -la'
                 }
             }
-        }
+        } */
         stage('Build') {
             steps {
                 script{
