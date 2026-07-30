@@ -39,14 +39,14 @@ pipeline {
     //         }
     //     }
     stage('Install Dependencies') {
-            steps {
-                script {
-                   sh """
-                        npm install
-                   """
-                }
-            }
+    steps {
+        dir('roboshop/ci/catalogue/catalogue-v3') {
+            sh '''
+                npm install
+            '''
         }
+    }
+}
     stage('Unit Testing') {
             steps {
                 script {
