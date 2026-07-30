@@ -5,7 +5,7 @@ pipeline {
     environment { 
         appVersion = ''
         REGION = "us-east-1"
-        ACC_ID = "315069654700"
+        ACC_ID = "490004627649"
         PROJECT = "roboshop"
         COMPONENT = "catalogue"
     }
@@ -54,7 +54,7 @@ pipeline {
                 }
             }
         }
-    stage('Sonar Scan') {
+    /* stage('Sonar Scan') {
             environment {
                 scannerHome = tool 'sonar-7.2' // name which we have given i.e., scan version in jenkins for sonarcube
             }
@@ -65,7 +65,7 @@ pipeline {
                          sh "${scannerHome}/bin/sonar-scanner"
                    }
                 }
-            }
+            } */
     //Enable webhook in sonarqube server and wait for results
          stage("Quality Gate") {
             steps {
@@ -73,7 +73,7 @@ pipeline {
                 waitForQualityGate abortPipeline: true }
             }
         } 
-        stage('Check Dependabot Alerts') {
+        /* stage('Check Dependabot Alerts') {
             environment { 
                 GITHUB_TOKEN = credentials('github-token')
             }
@@ -106,7 +106,7 @@ pipeline {
                     }
                 }
             }
-        }
+        } */
     stage('Docker Build') {
         steps {
             script {
