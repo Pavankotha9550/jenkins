@@ -40,3 +40,4 @@ terraform.rc
 .terragrunt-cache
 
 testing/
+db/
