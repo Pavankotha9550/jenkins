@@ -111,6 +111,7 @@ pipeline {
         } */
     stage('Docker Build') {
         steps {
+            dir('roboshop/ci/catalogue/catalogue-v3'){
             script {
                 withAWS(credentials: 'aws-creds', region: 'us-east-1') {
                     sh """
@@ -122,6 +123,7 @@ pipeline {
                 }
             }
         }
+    }
 
         stage('Check Scan Results') {
             steps {
