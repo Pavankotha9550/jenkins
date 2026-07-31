@@ -61,6 +61,7 @@ pipeline {
                 scannerHome = tool 'sonar-7.2' // name which we have given i.e., scan version in jenkins for sonarcube
             }
             steps {
+                 dir('roboshop/ci/catalogue/catalogue-v3'){
                 script {
                    // Sonar Server envrionment
                    withSonarQubeEnv(installationName: 'sonar-7.2') {// name given to sonarqube{
@@ -68,6 +69,7 @@ pipeline {
                    }
                 }
             } 
+            }
      }
     //Enable webhook in sonarqube server and wait for results
           stage("Quality Gate") {
