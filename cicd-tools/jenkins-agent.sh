@@ -18,10 +18,10 @@ yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.
 yum -y install terraform
 
 # NodeJs installation
-dnf module disable nodejs -y
-dnf module enable nodejs:20 -y
-dnf install nodejs -y
-yum install zip -y
+sudo dnf module disable nodejs -y
+sudo dnf module enable nodejs:20 -y
+sudo dnf install nodejs -y
+sudo yum install zip -y
 
 # docker
 yum install -y yum-utils
