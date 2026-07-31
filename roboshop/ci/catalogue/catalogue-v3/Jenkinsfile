@@ -130,75 +130,96 @@ pipeline {
     }
 
        stage('Check Scan Results') {
-        steps {
-            script {
-                withAWS(credentials: 'aws-creds', region: REGION) {
+    steps {
+        script {
+            withAWS(credentials: 'aws-creds', region: REGION) {
 
-                    echo "Waiting for ECR scan completion..."
+                echo "Waiting for ECR scan completion..."
 
-                    timeout(time: 10, unit: 'MINUTES') {
+                timeout(time: 10, unit: 'MINUTES') {
 
-                        waitUntil {
+                    waitUntil {
 
-                            def scanStatus = sh(
-                                script: """
-                                    aws ecr describe-image-scan-findings \
-                                    --repository-name ${PROJECT}/${COMPONENT} \
-                                    --image-id imageTag=${appVersion} \
-                                    --region ${REGION} \
-                                    --query 'imageScanStatus.status' \
-                                    --output text
-                                """,
-                                returnStdout: true
-                            ).trim()
+                        def scanStatus = sh(
+                            script: """
+                                aws ecr describe-image-scan-findings \
+                                --repository-name ${PROJECT}/${COMPONENT} \
+                                --image-id imageTag=${appVersion} \
+                                --region ${REGION} \
+                                --query 'imageScanStatus.status' \
+                                --output text 2>/dev/null || echo WAITING
+                            """,
+                            returnStdout: true
+                        ).trim()
 
-                            echo "Current scan status: ${scanStatus}"
 
-                            if (scanStatus == "COMPLETE") {
-                                return true
-                            }
+                        echo "Current scan status: ${scanStatus}"
 
-                            if (scanStatus == "FAILED") {
-                                error("ECR image scan failed")
-                            }
 
-                            sleep(time: 20, unit: 'SECONDS')
-
-                            return false
+                        if (scanStatus == "COMPLETE") {
+                            return true
                         }
+
+
+                        if (scanStatus == "FAILED") {
+                            error("❌ ECR image scan failed")
+                        }
+
+
+                        echo "Scan not ready yet. Waiting 20 seconds..."
+                        sleep(time: 20, unit: 'SECONDS')
+
+
+                        return false
                     }
+                }
 
 
-                    // Scan completed, now get findings
-                    def findings = sh(
-                        script: """
-                            aws ecr describe-image-scan-findings \
-                            --repository-name ${PROJECT}/${COMPONENT} \
-                            --image-id imageTag=${appVersion} \
-                            --region ${REGION} \
-                            --output json
-                        """,
-                        returnStdout: true
-                    ).trim()
+                echo "Fetching ECR scan findings..."
 
 
-                    def json = readJSON text: findings
+                def findings = sh(
+                    script: """
+                        aws ecr describe-image-scan-findings \
+                        --repository-name ${PROJECT}/${COMPONENT} \
+                        --image-id imageTag=${appVersion} \
+                        --region ${REGION} \
+                        --output json
+                    """,
+                    returnStdout: true
+                ).trim()
 
-                    def highCritical = json.imageScanFindings.findings.findAll {
-                        it.severity == "HIGH" || it.severity == "CRITICAL"
-                    }
 
 
-                    if (highCritical.size() > 0) {
-                        echo "❌ Found ${highCritical.size()} HIGH/CRITICAL vulnerabilities"
-                        error("Build failed due to vulnerabilities")
-                    }
-                    else {
-                        echo "✅ No HIGH/CRITICAL vulnerabilities found"
-                    }
+                def json = readJSON text: findings
+
+
+                def highCritical = json.imageScanFindings.findings.findAll {
+                    it.severity == "HIGH" || it.severity == "CRITICAL"
+                }
+
+
+
+                if (highCritical.size() > 0) {
+
+                    echo """
+                    ❌ HIGH/CRITICAL vulnerabilities found:
+
+                    ${highCritical.collect {
+                        "${it.name} - ${it.severity}"
+                    }.join('\n')}
+                    """
+
+                    error("Build failed due to HIGH/CRITICAL vulnerabilities")
+
+                } else {
+
+                    echo "✅ No HIGH/CRITICAL vulnerabilities found"
+
                 }
             }
         }
+    }
 }
     stage('Trigger Deploy') {
             when{
