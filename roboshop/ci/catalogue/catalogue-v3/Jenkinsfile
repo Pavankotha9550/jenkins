@@ -63,7 +63,7 @@ pipeline {
             steps {
                 script {
                    // Sonar Server envrionment
-                   withSonarQubeEnv(installationName: 'sonar-7.2') // name given to sonarqube{
+                   withSonarQubeEnv(installationName: 'sonar-7.2') {// name given to sonarqube{
                          sh "${scannerHome}/bin/sonar-scanner"
                    }
                 }
