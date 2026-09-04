@@ -34,24 +34,3 @@ usermod -aG docker ec2-user
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 chmod 700 get_helm.sh
 ./get_helm.sh
-
-# k8
-
-# Install eksctl
-ARCH=amd64
-PLATFORM=$(uname -s)_$ARCH
-curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
-tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
-install -m 0755 /tmp/eksctl /usr/local/bin && rm /tmp/eksctl
-
-# Install kubectl (match your cluster version)
-# Get your cluster version first: aws eks describe-cluster --name roboshop-cluster-v2 --query "cluster.version" --output text
-curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.33.0/2025-05-01/bin/linux/amd64/kubectl
-chmod +x ./kubectl
-mv kubectl /usr/local/bin/kubectl
-
-# Install kubectx + kubens
-git clone https://github.com/ahmetb/kubectx /opt/kubectx
-ln -s /opt/kubectx/kubens /usr/local/bin/kubens
-ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx  # Optional
-
