@@ -22,7 +22,7 @@ pipeline {
             steps {
                 dir('roboshop/ci/catalogue/catalogue-v3') {
                     script {
-                        def packageJson = readJSON file: 'package.json'
+                        def packageJson = readJSON file: 'package.json'#def meaning define
                         appVersion = packageJson.version
                         echo "Package version: ${appVersion}"
                     }
@@ -80,7 +80,7 @@ pipeline {
         } 
         /* stage('Check Dependabot Alerts') {
             environment { 
-                GITHUB_TOKEN = credentials('github-token')
+                GITHUB_TOKEN = credentials('github-token') // the credientails will directly store in jenkins credientails as secrets by user and it will fetch from there
             }
             steps {
                 script {
@@ -101,7 +101,7 @@ pipeline {
                     def criticalOrHigh = json.findAll { alert ->
                         def severity = alert?.security_advisory?.severity?.toLowerCase()
                         def state = alert?.state?.toLowerCase()
-                        return (state == "open" && (severity == "critical" || severity == "high"))
+                        return (state == "open" && (severity == "critical" || severity == "high")) // state was fixed is the issue we found explain in interview
                     }
 
                     if (criticalOrHigh.size() > 0) {
